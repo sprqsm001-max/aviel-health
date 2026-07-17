@@ -1,5 +1,5 @@
 /* motion.js — Cinematic animation orchestration for AVIEL Health
-   Uses GSAP + ScrollTrigger + Lenis (all loaded via defer before this script)
+   Uses GSAP + ScrollTrigger + Lenis (all loaded via script tags before this file)
 */
 
 // ── 1. Smooth Scrolling with Lenis ───────────────────────────────────────────
@@ -22,9 +22,12 @@ lenis.on('scroll', ScrollTrigger.update);
 // Make anchor links work with Lenis smooth scroll
 document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
   anchor.addEventListener('click', (e) => {
-    e.preventDefault();
-    const target = document.querySelector(anchor.getAttribute('href'));
-    if (target) lenis.scrollTo(target, { offset: -74, duration: 1.4 });
+    const href = anchor.getAttribute('href');
+    const target = document.querySelector(href);
+    if (target) {
+      e.preventDefault();
+      lenis.scrollTo(target, { offset: -74, duration: 1.4 });
+    }
   });
 });
 
@@ -47,25 +50,24 @@ lenis.on('scroll', ({ scroll }) => {
 const heroTl = gsap.timeline({ defaults: { ease: 'power3.out' } });
 
 heroTl
-  .fromTo('.hero h1',
+  .fromTo('main .hero h1',
     { y: 60, opacity: 0, visibility: 'visible' },
     { y: 0, opacity: 1, duration: 1.1, delay: 0.15 }
   )
-  .fromTo('.hero .lede',
+  .fromTo('main .hero .lede',
     { y: 36, opacity: 0, visibility: 'visible' },
     { y: 0, opacity: 1, duration: 1.0 },
     '-=0.75'
   )
-  .fromTo('.hero .cta-row',
+  .fromTo('main .hero .cta-row',
     { y: 24, opacity: 0, visibility: 'visible' },
     { y: 0, opacity: 1, duration: 0.8 },
     '-=0.65'
   );
 
-// ── 4. Scroll-triggered reveals ────────────────────────────────────────────────
-// All cards, timeline items, section headings, and pillars float up on scroll
+// ── 4. Scroll-triggered reveals (scoped to main only) ─────────────────────────
 document.querySelectorAll(
-  '.card, .timeline-item, .fgrid > div, section h2, .pillars .pill, .pillar'
+  'main .card, main .timeline-item, main .fgrid > div, main section h2, main .pillars .pill, main .pillar'
 ).forEach((el, i) => {
   gsap.fromTo(
     el,
@@ -75,7 +77,7 @@ document.querySelectorAll(
       opacity: 1,
       duration: 0.85,
       ease: 'power2.out',
-      delay: (i % 4) * 0.08, // stagger siblings in groups of 4
+      delay: (i % 4) * 0.08,
       scrollTrigger: {
         trigger: el,
         start: 'top 92%',
@@ -92,7 +94,7 @@ document.querySelectorAll('.stat .num').forEach((el) => {
   if (!numMatch) return;
 
   const finalNum = parseInt(numMatch[0].replace(/,/g, ''), 10);
-  if (isNaN(finalNum) || finalNum > 9999) return; // skip large/non-numeric
+  if (isNaN(finalNum) || finalNum > 9999) return;
 
   const prefix = finalText.replace(/[\d,]+.*/, '');
   const suffix = finalText.replace(/.*[\d,]+/, '');
@@ -104,7 +106,10 @@ document.querySelectorAll('.stat .num').forEach((el) => {
     onEnter: () => {
       gsap.fromTo(
         { val: 0 },
-        { val: finalNum, duration: 1.6, ease: 'power2.out',
+        {
+          val: finalNum,
+          duration: 1.6,
+          ease: 'power2.out',
           onUpdate: function () {
             el.textContent = prefix + Math.round(this.targets()[0].val).toLocaleString() + suffix;
           }

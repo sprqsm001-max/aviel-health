@@ -197,16 +197,17 @@ nav.primary a.active::after { content:""; position:absolute; left:0; right:0; bo
 }
 
 /* ── Motion initial states (hidden before GSAP animates them in) ── */
-.hero h1,
-.hero .lede,
-.hero .cta-row {
+/* Scoped to main only — footer must never be hidden */
+main .hero h1,
+main .hero .lede,
+main .hero .cta-row {
   visibility: hidden;
 }
-.card,
-.timeline-item,
-.fgrid > div,
-section h2,
-.pillars .pill {
+main .card,
+main .timeline-item,
+main .fgrid > div,
+main section h2,
+main .pillars .pill {
   visibility: hidden;
 }
 .divider3 { display: flex; gap: 6px; align-items: center; margin: 8px 0 28px; }
