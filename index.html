@@ -146,8 +146,8 @@ header.site {
   backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--line);
 }
-header.site .bar { display: flex; align-items: center; justify-content: space-between; padding: 16px 28px; max-width: var(--max); margin: 0 auto; }
-nav.primary { display: flex; align-items: center; gap: 28px; }
+header.site .bar { display: flex; align-items: center; justify-content: space-between; padding: 16px 28px; max-width: var(--max); margin: 0 auto; gap: 24px; }
+nav.primary { display: flex; align-items: center; gap: clamp(12px, 2vw, 28px); }
 nav.primary a { font-size: 14.5px; text-decoration: none; color: var(--charcoal-soft); position: relative; padding: 4px 0; }
 nav.primary a:hover, nav.primary a.active { color: var(--charcoal); }
 nav.primary a.active::after { content:""; position:absolute; left:0; right:0; bottom:-4px; height:2px; background: var(--terracotta); }
