@@ -1,0 +1,115 @@
+/* motion.js — Cinematic animation orchestration for AVIEL Health
+   Uses GSAP + ScrollTrigger + Lenis (all loaded via defer before this script)
+*/
+
+// ── 1. Smooth Scrolling with Lenis ───────────────────────────────────────────
+const lenis = new Lenis({
+  duration: 1.2,
+  easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+  smooth: true,
+  smoothTouch: false,
+});
+
+// Tick Lenis inside GSAP's ticker so they stay in sync
+gsap.ticker.add((time) => {
+  lenis.raf(time * 1000);
+});
+gsap.ticker.lagSmoothing(0);
+
+// Sync ScrollTrigger with Lenis
+lenis.on('scroll', ScrollTrigger.update);
+
+// Make anchor links work with Lenis smooth scroll
+document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+  anchor.addEventListener('click', (e) => {
+    e.preventDefault();
+    const target = document.querySelector(anchor.getAttribute('href'));
+    if (target) lenis.scrollTo(target, { offset: -74, duration: 1.4 });
+  });
+});
+
+// ── 2. Header — hide on scroll down, reveal on scroll up ─────────────────────
+let lastScrollY = 0;
+const header = document.querySelector('header.site');
+
+lenis.on('scroll', ({ scroll }) => {
+  if (scroll > lastScrollY && scroll > 100) {
+    header.style.transform = 'translateY(-100%)';
+    header.style.transition = 'transform 0.35s ease';
+  } else {
+    header.style.transform = 'translateY(0)';
+    header.style.transition = 'transform 0.25s ease';
+  }
+  lastScrollY = scroll;
+});
+
+// ── 3. Hero entrance — cinematic text reveal ──────────────────────────────────
+const heroTl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+
+heroTl
+  .fromTo('.hero h1',
+    { y: 60, opacity: 0, visibility: 'visible' },
+    { y: 0, opacity: 1, duration: 1.1, delay: 0.15 }
+  )
+  .fromTo('.hero .lede',
+    { y: 36, opacity: 0, visibility: 'visible' },
+    { y: 0, opacity: 1, duration: 1.0 },
+    '-=0.75'
+  )
+  .fromTo('.hero .cta-row',
+    { y: 24, opacity: 0, visibility: 'visible' },
+    { y: 0, opacity: 1, duration: 0.8 },
+    '-=0.65'
+  );
+
+// ── 4. Scroll-triggered reveals ────────────────────────────────────────────────
+// All cards, timeline items, section headings, and pillars float up on scroll
+document.querySelectorAll(
+  '.card, .timeline-item, .fgrid > div, section h2, .pillars .pill, .pillar'
+).forEach((el, i) => {
+  gsap.fromTo(
+    el,
+    { y: 48, opacity: 0, visibility: 'visible' },
+    {
+      y: 0,
+      opacity: 1,
+      duration: 0.85,
+      ease: 'power2.out',
+      delay: (i % 4) * 0.08, // stagger siblings in groups of 4
+      scrollTrigger: {
+        trigger: el,
+        start: 'top 92%',
+        toggleActions: 'play none none none',
+      },
+    }
+  );
+});
+
+// ── 5. Stats counter animation ────────────────────────────────────────────────
+document.querySelectorAll('.stat .num').forEach((el) => {
+  const finalText = el.textContent.trim();
+  const numMatch = finalText.match(/[\d,]+/);
+  if (!numMatch) return;
+
+  const finalNum = parseInt(numMatch[0].replace(/,/g, ''), 10);
+  if (isNaN(finalNum) || finalNum > 9999) return; // skip large/non-numeric
+
+  const prefix = finalText.replace(/[\d,]+.*/, '');
+  const suffix = finalText.replace(/.*[\d,]+/, '');
+
+  ScrollTrigger.create({
+    trigger: el,
+    start: 'top 88%',
+    once: true,
+    onEnter: () => {
+      gsap.fromTo(
+        { val: 0 },
+        { val: finalNum, duration: 1.6, ease: 'power2.out',
+          onUpdate: function () {
+            el.textContent = prefix + Math.round(this.targets()[0].val).toLocaleString() + suffix;
+          }
+        }
+      );
+    },
+  });
+});

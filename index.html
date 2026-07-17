@@ -88,7 +88,7 @@
 }
 
 * { box-sizing: border-box; }
-html { scroll-behavior: smooth; background: var(--cream); }
+html { scroll-behavior: auto; background: var(--cream); }
 body {
   margin: 0;
   background: var(--cream);
@@ -179,16 +179,35 @@ nav.primary a.active::after { content:""; position:absolute; left:0; right:0; bo
 .hero.dark h1 { color: var(--cream); }
 .hero.dark .lede { color: rgba(247,242,231,0.82); }
 
-/* Cinematic Hero Background */
+/* ── Cinematic Hero Background ── */
 .hero-cinematic {
-  background: linear-gradient(-45deg, var(--cream), rgba(129, 182, 76, 0.1), rgba(74, 151, 200, 0.1), var(--cream));
+  background: linear-gradient(-45deg,
+    #F7FAFB,
+    rgba(129,182,76,0.18),
+    rgba(74,151,200,0.18),
+    rgba(129,182,76,0.12),
+    #F7FAFB);
   background-size: 400% 400%;
-  animation: mesh 15s ease infinite;
+  animation: mesh 18s ease infinite;
 }
 @keyframes mesh {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
+}
+
+/* ── Motion initial states (hidden before GSAP animates them in) ── */
+.hero h1,
+.hero .lede,
+.hero .cta-row {
+  visibility: hidden;
+}
+.card,
+.timeline-item,
+.fgrid > div,
+section h2,
+.pillars .pill {
+  visibility: hidden;
 }
 .divider3 { display: flex; gap: 6px; align-items: center; margin: 8px 0 28px; }
 .divider3 i { display: block; height: 3px; border-radius: 2px; background: var(--terracotta); }
@@ -1210,5 +1229,16 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 });
 </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1ca7faffd938071',t:'MTc4NDMwNDQzNw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+
+<!-- GSAP + ScrollTrigger for cinematic animations -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<!-- Lenis for smooth scrolling -->
+<script src="https://unpkg.com/lenis@1.1.14/dist/lenis.min.js"></script>
+<!-- Register GSAP plugin -->
+<script>gsap.registerPlugin(ScrollTrigger);</script>
+<!-- Motion orchestration -->
+<script src="js/motion.js"></script>
+
+</body>
 </html>
